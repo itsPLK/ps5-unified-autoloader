@@ -190,7 +190,6 @@ static void run_autoload_sequence(const char *config_path) {
 int main(void) {
     printf("[autoloader] ps5-autoloader v" AUTOLOADER_VERSION " (" __DATE__ " " __TIME__ ") starting\n");
     fflush(stdout);
-    autoloader_notify("ps5-autoloader v" AUTOLOADER_VERSION "\n" __DATE__ " " __TIME__);
 
     /* Step 1: kill YouTube if running (simple SIGKILL) */
     kill_youtube_app();
@@ -212,13 +211,13 @@ int main(void) {
 
     if (found) {
         /* Step 5a: run the autoload sequence from config */
-        autoloader_notify("Autoload config found\n%s", config_path);
+        autoloader_notify("Found autoload config:\n%s", config_path);
         run_autoload_sequence(config_path);
     } else {
         /* Step 5b: no config — fall back to embedded pldmgr */
         printf("[autoloader] No autoload config found. Starting Payload Manager...\n");
         fflush(stdout);
-        autoloader_notify("No config found\nStarting Payload Manager...");
+        autoloader_notify("No autoload config found.\nStarting Payload Manager.");
         if (launch_elf_from_memory(pldmgr_elf, pldmgr_elf_len) != 0) {
             autoloader_notify("ERROR: failed to launch Payload Manager");
             printf("[autoloader] ERROR: failed to launch pldmgr\n");

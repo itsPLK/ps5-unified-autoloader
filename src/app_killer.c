@@ -130,13 +130,11 @@ int kill_youtube_app(void) {
                 fflush(stdout);
                 found = 1;
 
-                autoloader_notify("YouTube detected. Terminating...");
-
                 if (kill(ki->ki_pid, SIGKILL) == 0) {
                     printf("[autoloader] kill_youtube: SIGKILL sent to PID %d\n", ki->ki_pid);
-                    autoloader_notify("YouTube terminated.");
                 } else {
                     printf("[autoloader] kill_youtube: SIGKILL failed for PID %d\n", ki->ki_pid);
+                    autoloader_notify("Failed to terminate YouTube");
                     ret = -1;
                 }
                 fflush(stdout);
@@ -250,6 +248,5 @@ int kill_disc_player(void) {
         }
     }
 
-    autoloader_notify("Disc Player terminated.");
     return 0;
 }
