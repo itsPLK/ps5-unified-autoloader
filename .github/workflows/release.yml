@@ -2,11 +2,6 @@ name: release
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version number (e.g., 0.1.0)'
-        required: true
-        default: '0.1.0'
 
 permissions:
   contents: write
@@ -18,6 +13,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(grep '#define AUTOLOADER_VERSION' include/autoloader.h | awk '{print $3}' | tr -d '"' | tr -d '\r')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Get short commit SHA
         id: vars
@@ -34,16 +35,16 @@ jobs:
 
       - name: Rename binary with version and short SHA
         run: |
-          VERSION="${{ github.event.inputs.version }}"
+          VERSION="${{ steps.get_version.outputs.version }}"
           SHA="${{ steps.vars.outputs.sha_short }}"
           mv autoloader_v*.elf ps5-unified-autoloader-v${VERSION}-${SHA}.elf
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.event.inputs.version }}-${{ steps.vars.outputs.sha_short }}
-          name: Release v${{ github.event.inputs.version }}-${{ steps.vars.outputs.sha_short }}
-          files: ps5-unified-autoloader-v${{ github.event.inputs.version }}-${{ steps.vars.outputs.sha_short }}.elf
+          tag_name: v${{ steps.get_version.outputs.version }}-${{ steps.vars.outputs.sha_short }}
+          name: Release v${{ steps.get_version.outputs.version }}-${{ steps.vars.outputs.sha_short }}
+          files: ps5-unified-autoloader-v${{ steps.get_version.outputs.version }}-${{ steps.vars.outputs.sha_short }}.elf
           draft: false
           prerelease: false
         env:
