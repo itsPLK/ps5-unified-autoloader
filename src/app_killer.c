@@ -11,6 +11,8 @@
 #include <sys/user.h>
 #include <unistd.h>
 
+char g_killed_title_id[16] = {0};
+
 /* PS5 SDK: get per-process app info (title ID, app ID) */
 typedef struct app_info {
     uint32_t app_id;
@@ -120,6 +122,9 @@ int kill_youtube_app(void) {
             }
 
             if (is_yt && strcmp(ki->ki_comm, "eboot.bin") == 0) {
+                strncpy(g_killed_title_id, appinfo.title_id, sizeof(g_killed_title_id) - 1);
+                g_killed_title_id[sizeof(g_killed_title_id) - 1] = '\0';
+
                 printf("[autoloader] kill_youtube: found %s (PID %d, AppID 0x%04x)\n",
                        ki->ki_comm, ki->ki_pid, appinfo.app_id);
                 fflush(stdout);

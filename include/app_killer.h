@@ -14,3 +14,5 @@ int kill_youtube_app(void);
  * Returns 0 if not found or successfully killed, -1 on error.
  */
 int kill_disc_player(void);
+
+extern char g_killed_title_id[16];

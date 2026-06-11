@@ -43,6 +43,25 @@
 static int find_autoload_config(char *out_buf, size_t out_size) {
     struct stat st;
 
+    /* Check Title ID specific paths first if we have a title ID */
+    if (g_killed_title_id[0] != '\0') {
+        for (int i = 0; i < USB_COUNT; i++) {
+            snprintf(out_buf, out_size, "%s/ps5_autoloader_%s/autoload.txt", USB_BASES[i], g_killed_title_id);
+            if (stat(out_buf, &st) == 0) {
+                printf("[autoloader] Found config on USB%d: %s\n", i, out_buf);
+                fflush(stdout);
+                return 0;
+            }
+        }
+
+        snprintf(out_buf, out_size, "%s/ps5_autoloader_%s/autoload.txt", DATA_BASE, g_killed_title_id);
+        if (stat(out_buf, &st) == 0) {
+            printf("[autoloader] Found config in /data: %s\n", out_buf);
+            fflush(stdout);
+            return 0;
+        }
+    }
+
     /* Check each USB base in priority order */
     for (int i = 0; i < USB_COUNT; i++) {
         snprintf(out_buf, out_size, "%s/%s", USB_BASES[i], AUTOLOAD_CONFIG_SUBPATH);
