@@ -8,14 +8,32 @@ When loaded via elfldr (e.g. as part of your jailbreak chain), `autoloader.elf`:
 
 1. **Kills YouTube** (PPSA01650/01651/01652) if it is running
 2. **Kills BD Disc Player** (NPXS40140) if it is running, using a careful suspend→wait→kill sequence
-3. **Waits for elfldr** to be ready on port 9021 (up to 10 seconds)
-4. **Looks for** `ps5_autoloader/autoload.txt` in the following order (highest priority first):
+3. **Applies USB update zips** named `ps5_autoloader_update.zip` into `/data/ps5_autoloader`
+4. **Waits for elfldr** to be ready on port 9021 (up to 10 seconds)
+5. **Looks for** `ps5_autoloader/autoload.txt` in the following order (highest priority first):
    - `/mnt/usb0/ps5_autoloader/autoload.txt`
    - `/mnt/usb1/ps5_autoloader/autoload.txt`
    - … through `/mnt/usb7/ps5_autoloader/autoload.txt`
    - `/data/ps5_autoloader/autoload.txt`
-5. **If found**: launches each payload listed in the config via elfldr
-6. **If not found**: automatically starts the bundled **Payload Manager**
+6. **If found**: launches each payload listed in the config via elfldr
+7. **If not found**: automatically starts the bundled **Payload Manager**
+
+## USB update zip
+
+Place `ps5_autoloader_update.zip` at the root of a USB drive, for example:
+
+```
+/mnt/usb0/ps5_autoloader_update.zip
+```
+
+When `autoloader.elf` starts, it extracts the zip contents into:
+
+```
+/data/ps5_autoloader
+```
+
+The zip should contain the files as they should appear inside `/data/ps5_autoloader`, such as `autoload.txt` and payload ELFs.
+After a successful extraction, the update zip is removed from the USB drive.
 
 ## autoload.txt format
 
@@ -74,3 +92,7 @@ autoloader_v0.1.0_abc1234.elf
 autoloader.elf          ← load this via elfldr
   └─ pldmgr.elf         ← embedded fallback (launched if no autoload.txt found)
 ```
+
+## Credits
+
+- Zip extraction uses [kuba--/zip](https://github.com/kuba--/zip), which is based on miniz.

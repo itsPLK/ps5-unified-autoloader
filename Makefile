@@ -18,8 +18,8 @@ TARGET := $(SDK)/target
 # -I. lets the compiler find pldmgr_elf.c generated in the project root
 INCLUDES := -I. -Iinclude -I$(TARGET)/include
 LIBS     := -lSceSystemService -lSceUserService -lSceNetCtl -lpthread
-SRCS     := src/main.c src/launcher.c src/app_killer.c src/notification.c
-CFLAGS   := -Os -Wall -ffunction-sections -fdata-sections
+SRCS     := src/main.c src/launcher.c src/app_killer.c src/notification.c src/updater.c src/zip.c
+CFLAGS   := -Os -Wall -ffunction-sections -fdata-sections -DZIP_HAVE_SYMLINK=0
 LDFLAGS  := -Wl,--gc-sections
 
 ELF          := autoloader.elf

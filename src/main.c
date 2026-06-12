@@ -4,16 +4,18 @@
  * Execution flow:
  *   1. Kill YouTube app (if running)
  *   2. Kill BD Disc Player (if running, with proper timing)
- *   3. Wait for elfldr to be ready on port 9021
- *   4. Scan USB0-7, then /data for ps5_autoloader/autoload.txt
- *   5a. If found: iterate lines, launch each .elf from the config directory
- *   5b. If not found: send embedded pldmgr.elf to elfldr (fallback)
+ *   3. Apply ps5_autoloader_update.zip from USB to /data/ps5_autoloader
+ *   4. Wait for elfldr to be ready on port 9021
+ *   5. Scan USB0-7, then /data for ps5_autoloader/autoload.txt
+ *   6a. If found: iterate lines, launch each .elf from the config directory
+ *   6b. If not found: send embedded pldmgr.elf to elfldr (fallback)
  */
 
 #include "autoloader.h"
 #include "app_killer.h"
 #include "launcher.h"
 #include "notification.h"
+#include "updater.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -197,7 +199,10 @@ int main(void) {
     /* Step 2: kill BD Disc Player if running (suspend → wait → SIGKILL → LncKill) */
     kill_disc_player();
 
-    /* Step 3: wait for elfldr to be ready on port 9021 */
+    /* Step 3: apply a USB update zip before locating the autoload config */
+    apply_autoloader_update_from_usb();
+
+    /* Step 4: wait for elfldr to be ready on port 9021 */
     if (wait_for_elfldr() != 0) {
         autoloader_notify("ERROR: elfldr not available. Aborting.");
         printf("[autoloader] ERROR: elfldr did not become available. Aborting.\n");
@@ -205,16 +210,16 @@ int main(void) {
         return -1;
     }
 
-    /* Step 4: locate autoload.txt */
+    /* Step 5: locate autoload.txt */
     char config_path[512];
     int found = (find_autoload_config(config_path, sizeof(config_path)) == 0);
 
     if (found) {
-        /* Step 5a: run the autoload sequence from config */
+        /* Step 6a: run the autoload sequence from config */
         autoloader_notify("Found autoload config:\n%s", config_path);
         run_autoload_sequence(config_path);
     } else {
-        /* Step 5b: no config — fall back to embedded pldmgr */
+        /* Step 6b: no config — fall back to embedded pldmgr */
         printf("[autoloader] No autoload config found. Starting Payload Manager...\n");
         fflush(stdout);
         autoloader_notify("No autoload config found.\nStarting Payload Manager.");
