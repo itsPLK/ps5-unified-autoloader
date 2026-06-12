@@ -9,11 +9,11 @@ When loaded via elfldr (e.g. as part of your jailbreak chain), `autoloader.elf`:
 1. **Kills YouTube** (PPSA01650/01651/01652) if it is running
 2. **Kills BD Disc Player** (NPXS40140) if it is running, using a careful suspend→wait→kill sequence
 3. **Waits for elfldr** to be ready on port 9021 (up to 10 seconds)
-4. **Looks for** `ps5_autoloader/autoload.txt` in the following order (highest priority first):
-   - `/mnt/usb0/ps5_autoloader/autoload.txt`
-   - `/mnt/usb1/ps5_autoloader/autoload.txt`
-   - … through `/mnt/usb7/ps5_autoloader/autoload.txt`
-   - `/data/ps5_autoloader/autoload.txt`
+4. **Looks for** the `autoload.txt` configuration file in the following order (highest priority first):
+   - **App-specific directories on USB** (`/mnt/usb[0-7]/ps5_autoloader_<app>/autoload.txt`, where `<app>` is `bdjb` for BD Disc Player or the Title ID like `PPSA01650` for YouTube)
+   - **App-specific directory in `/data`** (`/data/ps5_autoloader_<app>/autoload.txt`)
+   - **Generic directories on USB** (`/mnt/usb[0-7]/ps5_autoloader/autoload.txt`)
+   - **Generic directory in `/data`** (`/data/ps5_autoloader/autoload.txt`)
 5. **If found**: launches each payload listed in the config via elfldr
 6. **If not found**: automatically starts the bundled **Payload Manager**
 
@@ -21,6 +21,7 @@ When loaded via elfldr (e.g. as part of your jailbreak chain), `autoloader.elf`:
 
 ```
 # This is a comment — ignored
+@sync                  # move config directory to /data if all loads succeed
 mypayload.elf          # loaded from the same directory as this autoload.txt
 anotherpayload.elf
 !1000                  # sleep 1000 ms before next entry
@@ -34,6 +35,8 @@ third_payload.elf
 - Absolute paths (starting with `/`) are used as-is
 - Lines starting with `#` are comments
 - Lines starting with `!` are sleep commands: `!<ms>` sleeps for that many milliseconds
+- Lines starting with `@` are directives:
+  - `@sync`: If loaded from a USB drive, this moves the entire active configuration directory (including all payloads and `autoload.txt`) to the internal `/data` partition on the PS5. The process runs only after all payloads have loaded successfully with zero errors. It clears the target internal directory, copies the files, verifies them byte-by-byte, and then deletes the folder from the USB drive so that subsequent boots run locally without needing the USB.
 
 ## Building
 
