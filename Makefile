@@ -18,7 +18,7 @@ TARGET := $(SDK)/target
 # -I. lets the compiler find pldmgr_elf.c generated in the project root
 INCLUDES := -I. -Iinclude -I$(TARGET)/include
 LIBS     := -lSceSystemService -lSceUserService -lSceNetCtl -lpthread
-SRCS     := src/main.c src/launcher.c src/app_killer.c src/notification.c
+SRCS     := src/main.c src/launcher.c src/app_killer.c src/notification.c src/sync.c
 CFLAGS   := -Os -Wall -ffunction-sections -fdata-sections
 LDFLAGS  := -Wl,--gc-sections
 

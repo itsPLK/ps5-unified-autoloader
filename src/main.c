@@ -21,6 +21,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "sync.h"
+
 /*
  * pldmgr.elf is embedded at build time via:
  *   xxd -i pldmgr.elf > pldmgr_elf.c
@@ -84,11 +86,13 @@ static int find_autoload_config(char *out_buf, size_t out_size) {
     return -1;
 }
 
+
 /* -----------------------------------------------------------------------
  * run_autoload_sequence
  *
  * Opens config_path and processes each line:
  *   - Empty lines and '#' comments are skipped
+ *   - Lines starting with '@' are directives (e.g. @sync)
  *   - Lines starting with '!' are sleep commands: !<ms>
  *   - Everything else is treated as a filename relative to config_dir
  * ----------------------------------------------------------------------- */
@@ -118,6 +122,8 @@ static void run_autoload_sequence(const char *config_path) {
 
     char line[512];
     int launched = 0;
+    int errors = 0;
+    int should_sync = 0;
 
     while (fgets(line, sizeof(line), f)) {
         /* Strip comments if any */
@@ -142,7 +148,13 @@ static void run_autoload_sequence(const char *config_path) {
         printf("[autoloader] Processing: %s\n", line);
         fflush(stdout);
 
-        if (line[0] == '!') {
+        if (line[0] == '@') {
+            /* Directive */
+            if (strcmp(line, "@sync") == 0) {
+                should_sync = 1;
+            }
+            continue;
+        } else if (line[0] == '!') {
             /* Sleep command: !<ms> */
             int ms = atoi(line + 1);
             if (ms > 0) {
@@ -165,6 +177,7 @@ static void run_autoload_sequence(const char *config_path) {
                 autoloader_notify("Launching: %s", line);
                 if (launch_elf_from_file(full_path) != 0) {
                     autoloader_notify("Failed to launch: %s", line);
+                    errors++;
                 } else {
                     launched++;
                     /* Small delay to give elfldr time to receive and process */
@@ -174,6 +187,7 @@ static void run_autoload_sequence(const char *config_path) {
                 printf("[autoloader] Not found: %s\n", full_path);
                 fflush(stdout);
                 autoloader_notify("Not found: %s", line);
+                errors++;
             }
         }
     }
@@ -182,6 +196,10 @@ static void run_autoload_sequence(const char *config_path) {
     printf("[autoloader] Autoload sequence complete. Launched %d payload(s).\n", launched);
     fflush(stdout);
     autoloader_notify("Autoload complete (%d payload(s) launched)", launched);
+
+    if (should_sync && errors == 0) {
+        try_sync_usb_to_data(config_path);
+    }
 }
 
 /* -----------------------------------------------------------------------
