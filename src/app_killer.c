@@ -11,7 +11,7 @@
 #include <sys/user.h>
 #include <unistd.h>
 
-char g_killed_title_id[16] = {0};
+char g_entry_point_id[16] = {0};
 
 /* PS5 SDK: get per-process app info (title ID, app ID) */
 typedef struct app_info {
@@ -122,8 +122,9 @@ int kill_youtube_app(void) {
             }
 
             if (is_yt && strcmp(ki->ki_comm, "eboot.bin") == 0) {
-                strncpy(g_killed_title_id, appinfo.title_id, sizeof(g_killed_title_id) - 1);
-                g_killed_title_id[sizeof(g_killed_title_id) - 1] = '\0';
+                /* Save the title ID so the autoloader can look for the specific ps5_autoloader_<title_id> config dir */
+                strncpy(g_entry_point_id, appinfo.title_id, sizeof(g_entry_point_id) - 1);
+                g_entry_point_id[sizeof(g_entry_point_id) - 1] = '\0';
 
                 printf("[autoloader] kill_youtube: found %s (PID %d, AppID 0x%04x)\n",
                        ki->ki_comm, ki->ki_pid, appinfo.app_id);
@@ -192,6 +193,10 @@ int kill_disc_player(void) {
         fflush(stdout);
         return 0; /* Different app — leave it alone */
     }
+
+    /* Set the killed title ID to 'bdjb' so the autoloader looks for ps5_autoloader_bdjb config dir */
+    strncpy(g_entry_point_id, "bdjb", sizeof(g_entry_point_id) - 1);
+    g_entry_point_id[sizeof(g_entry_point_id) - 1] = '\0';
 
     printf("[autoloader] kill_disc_player: disc player detected (AppID 0x%04x)\n", app_id);
     fflush(stdout);

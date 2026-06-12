@@ -15,4 +15,4 @@ int kill_youtube_app(void);
  */
 int kill_disc_player(void);
 
-extern char g_killed_title_id[16];
+extern char g_entry_point_id[16];
