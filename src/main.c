@@ -235,7 +235,6 @@ int main(void) {
         /* Step 5b: no config — fall back to embedded pldmgr */
         printf("[autoloader] No autoload config found. Starting Payload Manager...\n");
         fflush(stdout);
-        autoloader_notify("No autoload config found.\nStarting Payload Manager.");
         if (launch_elf_from_memory(pldmgr_elf, pldmgr_elf_len) != 0) {
             autoloader_notify("ERROR: failed to launch Payload Manager");
             printf("[autoloader] ERROR: failed to launch pldmgr\n");

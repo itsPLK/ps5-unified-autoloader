@@ -133,6 +133,8 @@ int kill_entry_app(void) {
 
                 if (kill(ki->ki_pid, SIGKILL) == 0) {
                     printf("[autoloader] kill_entry_app: SIGKILL sent to PID %d\n", ki->ki_pid);
+                    /* Give it 1.5 seconds to fully terminate and free resources */
+                    usleep(1500000);
                 } else {
                     printf("[autoloader] kill_entry_app: SIGKILL failed for PID %d\n", ki->ki_pid);
                     autoloader_notify("Failed to terminate %s", appinfo.title_id);
@@ -252,6 +254,9 @@ int kill_disc_player(void) {
             return -1;
         }
     }
+
+    /* Small 0.2s delay just in case to let OS clean up completely */
+    usleep(200000);
 
     return 0;
 }
