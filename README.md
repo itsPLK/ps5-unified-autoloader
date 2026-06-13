@@ -6,11 +6,11 @@ A standalone PS5 ELF payload that automates loading payloads. This is intended f
 
 When loaded via elfldr (e.g. as part of your jailbreak chain), `autoloader.elf`:
 
-1. **Kills YouTube** (PPSA01650/01651/01652) if it is running
+1. **Kills the entry point app** (YouTube `PPSA01650`/`01651`/`01652` or Artemis Lua games like Aerial Life, Aibeya, etc.) if it is running
 2. **Kills BD Disc Player** (NPXS40140) if it is running, using a careful suspend→wait→kill sequence
 3. **Waits for elfldr** to be ready on port 9021 (up to 10 seconds)
 4. **Looks for** the `autoload.txt` configuration file in the following order (highest priority first):
-   - **App-specific directories on USB** (`/mnt/usb[0-7]/ps5_autoloader_<app>/autoload.txt`, where `<app>` is `bdjb` for BD Disc Player or the Title ID like `PPSA01650` for YouTube)
+   - **App-specific directories on USB** (`/mnt/usb[0-7]/ps5_autoloader_<app>/autoload.txt`, where `<app>` is `bdjb` for BD Disc Player or the Title ID of the entry point app, e.g. `PPSA01650` for YouTube)
    - **App-specific directory in `/data`** (`/data/ps5_autoloader_<app>/autoload.txt`)
    - **Generic directories on USB** (`/mnt/usb[0-7]/ps5_autoloader/autoload.txt`)
    - **Generic directory in `/data`** (`/data/ps5_autoloader/autoload.txt`)
