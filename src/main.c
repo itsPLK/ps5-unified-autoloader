@@ -209,8 +209,8 @@ int main(void) {
     printf("[autoloader] ps5-autoloader v" AUTOLOADER_VERSION " (" __DATE__ " " __TIME__ ") starting\n");
     fflush(stdout);
 
-    /* Step 1: kill YouTube if running (simple SIGKILL) */
-    kill_youtube_app();
+    /* Step 1: kill entry point app (YouTube or Artemis) if running (simple SIGKILL) */
+    kill_entry_app();
 
     /* Step 2: kill BD Disc Player if running (suspend → wait → SIGKILL → LncKill) */
     kill_disc_player();

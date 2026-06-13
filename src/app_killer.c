@@ -70,32 +70,32 @@ static pid_t get_pid_by_name(const char *name) {
 }
 
 /* -----------------------------------------------------------------------
- * kill_youtube_app
+ * kill_entry_app
  * ----------------------------------------------------------------------- */
 
 /**
- * Kill the YouTube app (PPSA01650/01651/01652) if running.
+ * Kill the entry point app (YouTube or Artemis Lua game) if running.
  *
- * YouTube does NOT require suspending first — a direct SIGKILL to its
+ * It does NOT require suspending first — a direct SIGKILL to its
  * main process (eboot.bin) is sufficient and fully terminates it.
  */
-int kill_youtube_app(void) {
+int kill_entry_app(void) {
     int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PROC, 0};
     size_t buf_size = 0;
 
     if (sysctl(mib, 4, NULL, &buf_size, NULL, 0) < 0) {
-        printf("[autoloader] kill_youtube: sysctl size failed\n");
+        printf("[autoloader] kill_entry_app: sysctl size failed\n");
         return -1;
     }
 
     void *buf = malloc(buf_size);
     if (!buf) {
-        printf("[autoloader] kill_youtube: malloc failed\n");
+        printf("[autoloader] kill_entry_app: malloc failed\n");
         return -1;
     }
 
     if (sysctl(mib, 4, buf, &buf_size, NULL, 0) < 0) {
-        printf("[autoloader] kill_youtube: sysctl query failed\n");
+        printf("[autoloader] kill_entry_app: sysctl query failed\n");
         free(buf);
         return -1;
     }
@@ -112,30 +112,30 @@ int kill_youtube_app(void) {
         memset(&appinfo, 0, sizeof(appinfo));
 
         if (sceKernelGetAppInfo(ki->ki_pid, &appinfo) == 0) {
-            /* Check: title ID is one of the YT IDs AND comm is eboot.bin */
-            int is_yt = 0;
-            for (int i = 0; i < YOUTUBE_TITLE_ID_COUNT; i++) {
-                if (strcmp(appinfo.title_id, YOUTUBE_TITLE_IDS[i]) == 0) {
-                    is_yt = 1;
+            /* Check: title ID is one of the target IDs AND comm is eboot.bin */
+            int is_match = 0;
+            for (int i = 0; i < AUTOKILL_EBOOT_TITLE_ID_COUNT; i++) {
+                if (strcmp(appinfo.title_id, AUTOKILL_EBOOT_TITLE_IDS[i]) == 0) {
+                    is_match = 1;
                     break;
                 }
             }
 
-            if (is_yt && strcmp(ki->ki_comm, "eboot.bin") == 0) {
+            if (is_match && strcmp(ki->ki_comm, "eboot.bin") == 0) {
                 /* Save the title ID so the autoloader can look for the specific ps5_autoloader_<title_id> config dir */
                 strncpy(g_entry_point_id, appinfo.title_id, sizeof(g_entry_point_id) - 1);
                 g_entry_point_id[sizeof(g_entry_point_id) - 1] = '\0';
 
-                printf("[autoloader] kill_youtube: found %s (PID %d, AppID 0x%04x)\n",
+                printf("[autoloader] kill_entry_app: found %s (PID %d, AppID 0x%04x)\n",
                        ki->ki_comm, ki->ki_pid, appinfo.app_id);
                 fflush(stdout);
                 found = 1;
 
                 if (kill(ki->ki_pid, SIGKILL) == 0) {
-                    printf("[autoloader] kill_youtube: SIGKILL sent to PID %d\n", ki->ki_pid);
+                    printf("[autoloader] kill_entry_app: SIGKILL sent to PID %d\n", ki->ki_pid);
                 } else {
-                    printf("[autoloader] kill_youtube: SIGKILL failed for PID %d\n", ki->ki_pid);
-                    autoloader_notify("Failed to terminate YouTube");
+                    printf("[autoloader] kill_entry_app: SIGKILL failed for PID %d\n", ki->ki_pid);
+                    autoloader_notify("Failed to terminate %s", appinfo.title_id);
                     ret = -1;
                 }
                 fflush(stdout);
@@ -149,7 +149,7 @@ int kill_youtube_app(void) {
     free(buf);
 
     if (!found) {
-        printf("[autoloader] kill_youtube: no YouTube process found (not running)\n");
+        printf("[autoloader] kill_entry_app: no supported eboot process found (not running)\n");
         fflush(stdout);
     }
 

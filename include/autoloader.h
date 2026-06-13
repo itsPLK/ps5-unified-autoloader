@@ -4,7 +4,7 @@
  * ps5-autoloader — version & config
  * ----------------------------------------------------------------------- */
 
-#define AUTOLOADER_VERSION "0.1.1"
+#define AUTOLOADER_VERSION "0.1.2"
 
 /* Port that elfldr (socksrv) listens on for incoming ELF payloads */
 #define ELFLDR_PORT 9021
@@ -22,11 +22,32 @@ static const char * const USB_BASES[] = {
 };
 #define USB_COUNT 8
 
-/* YouTube app title IDs (PPSA01650–01652 cover all regional variants) */
-static const char * const YOUTUBE_TITLE_IDS[] = {
-    "PPSA01650", "PPSA01651", "PPSA01652"
+/* Applications that can be auto-killed directly via SIGKILL on eboot.bin */
+static const char * const AUTOKILL_EBOOT_TITLE_IDS[] = {
+    /* YouTube app title IDs (PPSA01650–01652 cover all regional variants) */
+    "PPSA01650", "PPSA01651", "PPSA01652",
+
+    /* Artemis Lua games title IDs */
+    "CUSA17122", /* Aerial Life */
+    "CUSA17068", /* Aibeya */
+    "CUSA19556", /* Aikagi 2 */
+    "CUSA16229", /* Aikagi Kimi to Issho ni Pack */
+    "CUSA29745", /* Fuyu Kiss */
+    "CUSA29746", /* Fuyu Kiss Demo */
+    "CUSA27389", /* Hamidashi Creative */
+    "CUSA27390", /* Hamidashi Creative Demo */
+    "CUSA14324", /* Haruoto Alice Gram Snow Drop */
+    "CUSA17112", /* IxSHE Tell */
+    "CUSA17126", /* IxSHE Tell Demo */
+    "CUSA25179", /* Jinki Resurrection */
+    "CUSA25180", /* Jinki Resurrection Demo */
+    "CUSA11481", /* Mikagami Sumika no Seifuku Katsudou */
+    "CUSA13586", /* Nora Princess and Crying Cat 2 */
+    "CUSA13303", /* Nora Princess and Stray Cat Heart HD */
+    "CUSA16074", /* Raspberry Cube */
+    "CUSA11977"  /* Tonari ni Kanojo no Iru Shiawase Winter Guest */
 };
-#define YOUTUBE_TITLE_ID_COUNT 3
+#define AUTOKILL_EBOOT_TITLE_ID_COUNT (sizeof(AUTOKILL_EBOOT_TITLE_IDS) / sizeof(AUTOKILL_EBOOT_TITLE_IDS[0]))
 
 /* BD Disc Player title ID and process name */
 #define DISC_PLAYER_TITLE_ID "NPXS40140"
