@@ -4,7 +4,7 @@
  * ps5-autoloader — version & config
  * ----------------------------------------------------------------------- */
 
-#define AUTOLOADER_VERSION "0.1.2"
+#define AUTOLOADER_VERSION "0.1.3"
 
 /* Port that elfldr (socksrv) listens on for incoming ELF payloads */
 #define ELFLDR_PORT 9021

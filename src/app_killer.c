@@ -168,7 +168,7 @@ int kill_entry_app(void) {
  * The disc player requires a careful teardown sequence with specific delays
  * to allow the home screen to become stable before the kill:
  *   1. sceLncUtilSuspendApp
- *   2. sleep(2)  — home screen transition stability
+ *   2. sleep(6)  — home screen transition stability
  *   3. SIGKILL on "SceDiscPlayer" process
  *   4. sleep(1)
  *   5. sceLncUtilKillApp
@@ -215,7 +215,7 @@ int kill_disc_player(void) {
     fflush(stdout);
 
     /* Wait for home screen transition stability */
-    sleep(2);
+    sleep(6);
 
     /* Step 4: SIGKILL on the disc player process */
     pid_t pid = get_pid_by_name(DISC_PLAYER_PROCESS);
