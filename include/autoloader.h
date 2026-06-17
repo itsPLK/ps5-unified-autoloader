@@ -45,7 +45,17 @@ static const char * const AUTOKILL_EBOOT_TITLE_IDS[] = {
     "CUSA13586", /* Nora Princess and Crying Cat 2 */
     "CUSA13303", /* Nora Princess and Stray Cat Heart HD */
     "CUSA16074", /* Raspberry Cube */
-    "CUSA11977"  /* Tonari ni Kanojo no Iru Shiawase Winter Guest */
+    "CUSA11977", /* Tonari ni Kanojo no Iru Shiawase Winter Guest */
+
+    /* Yarpe games title IDs */
+    "CUSA30428", /* A YEAR OF SPRINGS PS4 */
+    "CUSA30429", /* A YEAR OF SPRINGS PS4 */
+    "CUSA30430", /* A YEAR OF SPRINGS PS4 */
+    "CUSA30431", /* A YEAR OF SPRINGS PS4 */
+    "CUSA32096", /* Arcade Spirits: The New Challengers PS4 */
+    "CUSA32097", /* Arcade Spirits: The New Challengers PS4 */
+    "PPSA06409", /* Arcade Spirits: The New Challengers PS5 */
+    "PPSA06410"  /* Arcade Spirits: The New Challengers PS5 */
 };
 #define AUTOKILL_EBOOT_TITLE_ID_COUNT (sizeof(AUTOKILL_EBOOT_TITLE_IDS) / sizeof(AUTOKILL_EBOOT_TITLE_IDS[0]))
 
