@@ -55,7 +55,15 @@ static const char * const AUTOKILL_EBOOT_TITLE_IDS[] = {
     "CUSA32096", /* Arcade Spirits: The New Challengers PS4 */
     "CUSA32097", /* Arcade Spirits: The New Challengers PS4 */
     "PPSA06409", /* Arcade Spirits: The New Challengers PS5 */
-    "PPSA06410"  /* Arcade Spirits: The New Challengers PS5 */
+    "PPSA06410", /* Arcade Spirits: The New Challengers PS5 */
+
+    /* mast1c0re games title IDs */
+    "CUSA02199", /* Okage: Shadow King (US) */
+    "CUSA02282", /* Okage: Shadow King (EU) */
+    "CUSA03474", /* Star Wars Racer Revenge (US) */
+    "CUSA03492", /* Star Wars Racer Revenge (EU) */
+    "CUSA07842", /* Jak X: Combat Racing (US) */
+    "CUSA07992"  /* Jak X: Combat Racing (EU) */
 };
 #define AUTOKILL_EBOOT_TITLE_ID_COUNT (sizeof(AUTOKILL_EBOOT_TITLE_IDS) / sizeof(AUTOKILL_EBOOT_TITLE_IDS[0]))
 
